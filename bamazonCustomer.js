@@ -78,9 +78,29 @@ var goShopping = function(){
 						name: "quantity",
 						type: "input",
 						message: "How many would you like?"
-					}).then(function())  //build what should happen if amount of item requested is not in stock and what should happen if it is.
+					//build what should happen if amount of item requested is not in stock and what should happen if it is.
+					}).then(function(item){  
+						if (chosenProduct.stock_quantity < parseInt(item.quantity)){
+							console.log("We don't have that amount in stock");
+							consumerStart();
+						}
+						else{
+							//Do the math to display item price, requested amount and total amount (price * amount).
+							var totalPrice = chosenProduct.price * item.quantity;
+							var newQuantity = chosenProduct.stock_quantity - item.quantity;
+							connection.query("UPDATE products SET ? WHERE ?", [{
+								stock_quantity: newQuantity
+							}, {
+								item_id: product.choice
+							}], function(err, res){
+								console.log("Thank you for purchasing " + item.quantity+ " " + products[i].product_name + "'s.  Your total is " + totalPrice + ".")
+								consumerStart();
+							});
+
+						}
+					});
 				}
 			}
-		})
+		});
 	}
 }
