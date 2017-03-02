@@ -6,7 +6,7 @@ var connection = mysql.createConnection({
 	port: 3306,
 
 	user: "root",
-	password: "",
+	password: "F3rmenter!",
 	database: "Bamazon"
 });
 
@@ -25,13 +25,16 @@ var connection = mysql.createConnection({
 // });
 
 //Begin Actual Program
-var consumerStart = function(){
+//var consumerStart = function(){
+function start(){
 	connection.query("SELECT * FROM products", function(err, products){
 		if (err) throw err;
 		console.table(products);
+		custDecision();
 	});
-
-	//Run inquirer module to pose two questions to the the Buy or Leave
+};
+		//Run inquirer module to pose two questions to the the Buy or Leave
+	function custDecision(){
 	inquirer.prompt({
 		name:"BuyOrLeave",
 		type: "rawlist",
@@ -45,16 +48,18 @@ var consumerStart = function(){
 			goShopping();
 		}
 	});
+	
 };
 
-var leaveStore = function(){
+function leaveStore(){
 	console.log("Thanks for stopping by. Come again soon!");
 	connection.end();
 };
 
-var goShopping = function(){
+function goShopping(){
 	//User inquirer to ask two questions. 1. What is the ID of hte product to buy and 2. How many units would they like to buy.
 	connection.query("SELECT * FROM products", function(err, products){
+		console.log("\n");
 		console.table(products);
 		inquirer.prompt({
 			name: "items",
@@ -79,28 +84,28 @@ var goShopping = function(){
 					}).then(function(item){  
 						if (chosenProduct.stock_quantity < parseInt(item.quantity)){
 							console.log("We don't have that amount in stock");
-							consumerStart();
+							start();
 						}
 						else{
 							//Do the math to display item price, requested amount and total amount (price * amount).
-							var totalPrice = chosenProduct.price * item.quantity;
+							var totalPrice = parseFloat(chosenProduct.price) * parseFloat(item.quantity);
 							var newQuantity = chosenProduct.stock_quantity - item.quantity;
-							console.log("New Quantity " + newQuantity);
+							//console.log("New Quantity " + newQuantity);
 							connection.query("UPDATE products SET ? WHERE ?", [{
 								stock_quantity: newQuantity
 							}, {
 								item_id: product.items
 							}], function(err, res){
-								console.log("Thank you for purchasing " + item.quantity + " " + chosenProduct.product_name + "'s.  Your total is " + totalPrice + ".")
-								consumerStart();
+								console.log("Thank you for purchasing " + item.quantity + " " + chosenProduct.product_name + "'s.  Your total is $" + totalPrice + ". \n");
+								start();
 							});
 
 						}
 					});
 				}
-				console.log(product.items, products[i].item_id);
+				//console.log(product.items, products[i].item_id);
 			}
 		});
 	});
 }
-consumerStart();
+start();
