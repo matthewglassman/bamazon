@@ -22,4 +22,5 @@ VALUES ("Bed Sheets", "Home/Kitchen", 17.50, 50),
 	   ("Food Container Set", "Home/Kitchen", 38.65, 76),
 	   ("Legal Pad", "Office/School", 7.90, 225),
 	   ("Digital Camera", "Electronics", 1830.85, 125),
-	   ("Men's Fedora", "Clothing", 60.00, 10);
+	   ("Men's Fedora", "Clothing", 60.00, 10),
+       ("Box of Pens", "Office/School", 9.35, 3);

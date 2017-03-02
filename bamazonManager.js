@@ -7,7 +7,7 @@ var connection = mysql.createConnection({
 	port: 3306,
 
 	user: "root",
-	password: "F3rmenter!",
+	password: "",
 
 	database: "Bamazon"
 });
@@ -22,7 +22,7 @@ var managerActions = function(){
 		name: "action",
 		type: "list",
 		message: "What would you like to do?",
-		choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product"]
+		choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product", "Leave Manager System"]
 	}).then(function(answer) {
 
 		switch(answer.action){
@@ -42,8 +42,8 @@ var managerActions = function(){
 			newItem();
 			break;
 
-			case "Leave System"
-			connection.end();
+			case "Leave System":
+			leave();
 			break;
 		}
 	});
@@ -57,9 +57,42 @@ var listInventory = function(){
 	});
 };
 
-//var lowInventory = function(){};
+var lowInventory = function(){
+	connection.query("SELECT * FROM products WHERE stock_quantity < 5", function(err, products){
+		console.table(products);
+		managerActions();
+	});
+};
 
-//var itemRestor = function(){};
+var itemRestock = function(){
+
+	connection.query("SELECT * FROM products", function(err, res){
+		console.table(res);
+	});
+
+	inquirer.prompt([{
+		name: "item",
+		type: "input",
+		message: "Enter the ID of the item you would like to restock?"
+	}, {
+		name: "quantity",
+		type: "input",
+		message: "How many more would you like to add?"
+	}]).then(function(answer){
+		var query = "UPDATE products SET ? WHERE ?";
+		console.log(answer.item, answer.quantity);
+		connection.query(query, [{stock_quantity: answer.quantity}, {item_id: answer.item}], function(err, res){
+			console.log(res);
+			managerActions();
+		});
+
+	});
+
+};
 
 //var newItem = function(){};
+
+var leave = function(){
+	connection.end();
+};
 //managerActions();
