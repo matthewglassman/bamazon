@@ -7,7 +7,7 @@ var connection = mysql.createConnection({
 	port: 3306,
 
 	user: "root",
-	password: "",
+	password: "F3rmenter!",
 
 	database: "Bamazon"
 });
@@ -21,7 +21,7 @@ var managerActions = function(){
 	inquirer.prompt({
 		name: "action",
 		type: "list",
-		message: "What would you like to do?"
+		message: "What would you like to do?",
 		choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product"]
 	}).then(function(answer) {
 
@@ -41,14 +41,25 @@ var managerActions = function(){
 			case "Add New Product":
 			newItem();
 			break;
+
+			case "Leave System"
+			connection.end();
+			break;
 		}
 	});
 };
 
-var listInventory = function(){};
+var listInventory = function(){
+	connection.query("SELECT * FROM products", function(err, products){
+		if (err) throw err;
+		console.table(products)
+		managerActions();
+	});
+};
 
-var lowInventory = function(){};
+//var lowInventory = function(){};
 
-var itemRestor = function(){};
+//var itemRestor = function(){};
 
-var newItem = function(){};
+//var newItem = function(){};
+//managerActions();
