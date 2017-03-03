@@ -34,7 +34,7 @@ var managerActions = function(){
 			lowInventory();
 			break;
 
-			case "Add To Inventory":
+			case "Add to Inventory":
 			itemRestock();
 			break;
 
@@ -42,7 +42,7 @@ var managerActions = function(){
 			newItem();
 			break;
 
-			case "Leave System":
+			case "Leave Manager System":
 			leave();
 			break;
 		}
@@ -65,9 +65,10 @@ var lowInventory = function(){
 };
 
 var itemRestock = function(){
-
+	//console.log("This is running");
 	connection.query("SELECT * FROM products", function(err, res){
 		console.table(res);
+		console.log("\n")
 	});
 
 	inquirer.prompt([{
@@ -79,12 +80,20 @@ var itemRestock = function(){
 		type: "input",
 		message: "How many more would you like to add?"
 	}]).then(function(answer){
+		connection.query("SELECT * FROM products", function(err, res){ 
+			var units = parseInt(answer.quantity);
+			var itemID = parseInt(answer.item)-1;
+
+		var newQuantity = res[itemID].stock_quantity + units;
+		//console.log(newQuantity);
 		var query = "UPDATE products SET ? WHERE ?";
 		console.log(answer.item, answer.quantity);
-		connection.query(query, [{stock_quantity: answer.quantity}, {item_id: answer.item}], function(err, res){
-			console.log(res);
+		connection.query(query, [{stock_quantity: newQuantity}, {item_id: answer.item}], function(err, res){
+			//console.log(res);
 			managerActions();
 		});
+	});
+		
 
 	});
 
