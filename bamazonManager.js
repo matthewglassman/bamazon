@@ -7,7 +7,7 @@ var connection = mysql.createConnection({
 	port: 3306,
 
 	user: "root",
-	password: "",
+	password: "F3rmenter!",
 
 	database: "Bamazon"
 });
@@ -99,7 +99,40 @@ var itemRestock = function(){
 
 };
 
-//var newItem = function(){};
+var newItem = function(){
+	inquirer.prompt([{
+		name: "name",
+		type: "input",
+		message: "What is the name of the new product to add?"
+	},{
+		name: "department",
+		type: "input",
+		message: "What department does it belong to?"
+	},{
+		name: "cost",
+		type: "input",
+		message: "How much will this cost per unit?"
+	},{
+		name: "quantity",
+		type: "input",
+		message: "How many units are in stock?"
+	}]).then(function(answer){
+		connection.query("Select * FROM products", function(err, res){
+			
+			var query = "INSERT INTO products SET ?";
+
+			connection.query(query, [{
+				product_name: answer.name,
+				department_name: answer.department,
+				price: parseFloat(answer.cost),
+				stock_quantity: parseInt(answer.quantity)
+			}], function(err, res){
+				console.log("Your new item was added.");
+				managerActions();
+			});
+		});
+	})
+};
 
 var leave = function(){
 	connection.end();
